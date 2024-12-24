@@ -1,0 +1,27 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Navigation from '../components/Navigation.astro';
+---
+
+<Layout title="Register">
+  <Navigation />
+
+  <!-- Page Heading -->
+  <h1>Register</h1>
+  <p>Already have an account? <a href="/signin">Sign in</a></p>
+
+  <!-- Registration Form -->
+  <form action="/api/auth/register" method="post">
+    
+    <!-- Email Input -->
+    <label for="email">Email</label>
+    <input type="email" name="email" id="email" />
+    
+    <!-- Password Input -->
+    <label for="password">Password</label>
+    <input type="password" name="password" id="password" />
+    
+    <!-- Submit Button -->
+    <button type="submit">Register</button>
+  </form>
+</Layout>

@@ -1,0 +1,72 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { supabase } from "../lib/supabase";
+import Navigation from '../components/Navigation.astro';
+
+
+
+// Retrieve authentication tokens from cookies.
+const accessToken = Astro.cookies.get("sb-access-token");
+const refreshToken = Astro.cookies.get("sb-refresh-token");
+
+
+
+// Redirect to sign-in if tokens are missing.
+if (!accessToken || !refreshToken) {
+  return Astro.redirect("/signin");
+}
+
+
+
+// Attempt to set the session using the tokens.
+let session;
+try {
+  session = await supabase.auth.setSession({
+    refresh_token: refreshToken.value,
+    access_token: accessToken.value,
+  });
+
+  // If session setting fails, clear tokens and redirect to sign-in.
+  if (session.error) {
+    Astro.cookies.delete("sb-access-token", {
+      path: "/",
+    });
+    Astro.cookies.delete("sb-refresh-token", {
+      path: "/",
+    });
+    return Astro.redirect("/signin");
+  }
+} catch (error) {
+  // Handle unexpected errors: clear tokens and redirect to sign-in.
+  Astro.cookies.delete("sb-access-token", {
+    path: "/",
+  });
+  Astro.cookies.delete("sb-refresh-token", {
+    path: "/",
+  });
+  return Astro.redirect("/signin");
+}
+
+
+
+// Retrieve the email of the authenticated user.
+const email = session.data.user?.email;
+---
+
+
+
+
+
+<Layout title="dashboard">
+  <Navigation />
+
+  <!-- Dashboard Welcome Message -->
+  <h1>Welcome user with email address: {email}</h1>
+  <img src="/welcome.webp" alt="Welcome" />
+  <p>We're glad to see you today</p>
+
+  <!-- Sign-Out Form -->
+  <form action="/api/auth/signout">
+    <button type="submit">Sign Me Out</button>
+  </form>
+</Layout>

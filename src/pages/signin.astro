@@ -1,0 +1,42 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Navigation from '../components/Navigation.astro';
+
+
+// Retrieve cookies and handle redirection.
+const { cookies, redirect } = Astro;
+
+
+// Check if authentication tokens are present.
+const accessToken = cookies.get("sb-access-token");
+const refreshToken = cookies.get("sb-refresh-token");
+
+
+// Redirect to the dashboard if the user is already authenticated.
+if (accessToken && refreshToken) {
+  return redirect("/dashboard");
+}
+---
+
+<Layout title="Sign in">
+  <Navigation />
+
+  <!-- Page Heading -->
+  <h1>Sign in</h1>
+  <p>New here? <a href="/register">Create an account</a></p>
+
+  <!-- Sign-In Form -->
+  <form action="/api/auth/signin" method="post">
+    
+    <!-- Email Input -->
+    <label for="email">Email</label>
+    <input type="email" name="email" id="email" />
+    
+    <!-- Password Input -->
+    <label for="password">Password</label>
+    <input type="password" name="password" id="password" />
+    
+    <!-- Submit Button -->
+    <button type="submit">Login</button>
+  </form>
+</Layout>
